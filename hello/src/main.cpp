@@ -1,4 +1,5 @@
 #include    <vsg/all.h>
+#include    <vsgXchange/all.h>
 
 int main(int argc, char *argv[])
 {
@@ -13,6 +14,12 @@ int main(int argc, char *argv[])
 
     vsg::ref_ptr<vsg::Group> scene = vsg::Group::create();
 
+    vsg::ref_ptr<vsg::Options> options = vsg::Options::create();
+    options->add(vsgXchange::all::create());
+    vsg::Path filepath(L"../data/cessna.vsgt");
+    auto root = vsg::read_cast<vsg::Node>(filepath, options);
+    scene->addChild(root);
+
     vsg::ref_ptr<vsg::Viewer> viewer = vsg::Viewer::create();
 
     vsg::ref_ptr<vsg::Window> window(vsg::Window::create(traits));
@@ -21,10 +28,14 @@ int main(int argc, char *argv[])
 
     vsg::ref_ptr<vsg::Perspective> perspective;
 
-    perspective = vsg::Perspective::create(30.0,
-                                           static_cast<double>(window->extent2D().width) / static_cast<double>(window->extent2D().height),
-                                           0.0001,
-                                           10000.0);
+    double aspect = static_cast<double>(window->extent2D().width) /
+            static_cast<double>(window->extent2D().height);
+
+    perspective = vsg::Perspective::create(
+                30.0,
+                aspect,
+                0.0001,
+                10000.0);
 
 
     vsg::ref_ptr<vsg::LookAt> LookAt = vsg::LookAt::create();
@@ -34,7 +45,10 @@ int main(int argc, char *argv[])
                 LookAt,
                 vsg::ViewportState::create(window->extent2D()));
 
-    vsg::ref_ptr<vsg::CommandGraph> commandGraph = vsg::createCommandGraphForView(window, camera, scene);
+    viewer->addEventHandler(vsg::Trackball::create(camera));
+
+    vsg::ref_ptr<vsg::CommandGraph> commandGraph =
+            vsg::createCommandGraphForView(window, camera, scene);
 
     viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 

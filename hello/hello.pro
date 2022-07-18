@@ -24,6 +24,7 @@ win32 {
     INCLUDEPATH += $$(VULKAN_SDK)/Include
 
     LIBS += -L$(VSG_LIBRARY_PATH) -lvsg
+    LIBS += -L$(VSG_LIBRARY_PATH) -lvsgXchange
 }
 
 unix {
