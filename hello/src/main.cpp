@@ -2,6 +2,9 @@
 
 int main(int argc, char *argv[])
 {
+    (void) argc;
+    (void) argv;
+
     vsg::ref_ptr<vsg::WindowTraits> traits = vsg::WindowTraits::create();
     traits->windowTitle = "Hello, Vulkan Scene Graph!";
     traits->width = 1280;
@@ -23,7 +26,17 @@ int main(int argc, char *argv[])
                                            0.0001,
                                            10000.0);
 
-    //vsg::ref_ptr<vsg::Camera> camera = vsg::Camera(perspective)
+
+    vsg::ref_ptr<vsg::LookAt> LookAt = vsg::LookAt::create();
+
+    vsg::ref_ptr<vsg::Camera> camera = vsg::Camera::create(
+                perspective,
+                LookAt,
+                vsg::ViewportState::create(window->extent2D()));
+
+    vsg::ref_ptr<vsg::CommandGraph> commandGraph = vsg::createCommandGraphForView(window, camera, scene);
+
+    viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
     viewer->compile();
 
